@@ -1,26 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { Client } from "boardgame.io/react";
+import { Local } from "boardgame.io/multiplayer";
+import { Chinchon } from "./Game";
+import ChinchonBoard from "./Board";
 
-function App() {
+const ChinchonClient = Client({
+  game: Chinchon,
+  board: ChinchonBoard,
+  multiplayer: Local(),
+});
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ChinchonClient playerID="0" />
+      <ChinchonClient playerID="1" />
     </div>
   );
-}
+};
 
 export default App;

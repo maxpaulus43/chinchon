@@ -1,8 +1,14 @@
-import { Ctx } from "boardgame.io";
+import type { Ctx, PlayerID } from "boardgame.io";
 
 export enum ChinchonStage {
   Draw = "draw",
   Discard = "discard",
+  Score = "score",
+}
+
+export enum ChinchonPhase {
+  Play = "play",
+  Score = "score",
 }
 
 export enum CardSuit {
@@ -26,14 +32,17 @@ export interface ChinchonPlayerState {
   didBuyIn: boolean;
 }
 
-export interface Players {
+export interface PlayerMap {
   [playerID: string]: ChinchonPlayerState;
 }
 
 export interface ChinchonGameState {
   drawPile: ChinchonCard[];
   discardPile: ChinchonCard[];
-  players: Players;
+  playerMap: PlayerMap;
+  playOrder: Array<PlayerID>;
+  playOrderPos: number;
+  currentPlayer: PlayerID;
 }
 
-export type ChinchonCtx = Ctx;
+export interface ChinchonCtx extends Ctx {}

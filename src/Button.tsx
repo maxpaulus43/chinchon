@@ -10,7 +10,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return disabled ? (
     <button
-      className="bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed m-1"
+      className="bg-blue-500 text-white py-2 px-4 rounded opacity-80 cursor-not-allowed m-1"
       onClick={onClick}
       disabled={disabled}
     >
@@ -18,7 +18,9 @@ const Button: React.FC<ButtonProps> = ({
     </button>
   ) : (
     <button
-      className={`bg-blue-500 hover:bg-blue-700 text-white m-1 font-bold py-2 px-4 rounded ${highlight ? "bg-yellow-500 hover:bg-yellow-500" : ""}`}
+      className={`bg-blue-500 hover:bg-blue-700 text-white m-1 py-2 px-4 rounded ${
+        highlight ? "bg-yellow-500 hover:bg-yellow-500" : ""
+      }`}
       onClick={onClick}
       disabled={disabled}
     >

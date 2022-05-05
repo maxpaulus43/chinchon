@@ -59,12 +59,16 @@ const meldHandWithCard: Move<ChinchonGameState> = (
     1
   );
 
-  scoreAndEliminatePlayers(G, ctx);
+  scoreAndEliminatePlayers(G, ctx, hand);
   // TODO add a phase where players get to see the end board state.
   resetGame(G, ctx);
 };
 
-function scoreAndEliminatePlayers(G: ChinchonGameState, ctx?: ChinchonCtx) {
+function scoreAndEliminatePlayers(
+  G: ChinchonGameState,
+  ctx: ChinchonCtx,
+  winningHand: ChinchonCard[]
+) {
   for (const [pId, player] of Object.entries(G.playerMap)) {
     player.points += calculatePointsForHand(G, player.hand);
 
@@ -109,7 +113,7 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
   },
   endIf: (G) => {
     if (G.playOrder.length === 1) {
-      return G.playOrder[0];
+      // return G.playOrder[0];
     }
   },
   turn: {

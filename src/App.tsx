@@ -7,20 +7,16 @@ import ChinchonLobby from "./ChinchonLobby";
 const ChinchonClient = Client({
   game: Chinchon,
   board: ChinchonBoard,
-  numPlayers: 3,
-  debug: true,
+  numPlayers: 1,
+  debug: false,
   multiplayer: Local(),
 });
 
 const App: React.FC = () => {
-  return <ChinchonLobby />
+  // return <ChinchonLobby />
   return (
     <div>
       <ChinchonClient playerID="0" />
-      <br />
-      <ChinchonClient playerID="1" />
-      <br />
-      <ChinchonClient playerID="2" />
     </div>
   );
 };

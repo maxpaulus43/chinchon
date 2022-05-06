@@ -28,6 +28,7 @@ export interface ChinchonCard {
 
 export interface ChinchonPlayerState {
   hand: ChinchonCard[];
+  handLength?: number
   points: number;
   didBuyIn: boolean;
 }
@@ -39,7 +40,7 @@ export interface PlayerMap {
 export interface ChinchonGameState {
   drawPile: ChinchonCard[];
   discardPile: ChinchonCard[];
-  playerMap: PlayerMap;
+  players: PlayerMap;
   playOrder: Array<PlayerID>;
   playOrderPos: number;
   currentPlayer: PlayerID;

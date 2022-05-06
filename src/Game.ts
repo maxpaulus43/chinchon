@@ -1,6 +1,10 @@
 import { Game, Ctx, Move } from "boardgame.io";
-import { INVALID_MOVE, PlayerView } from "boardgame.io/core";
-import { calculatePointsForHand, canMeldWithCard } from "./MeldLogic";
+import { INVALID_MOVE } from "boardgame.io/core";
+import {
+  calculatePointsForHand,
+  canMeldWithCard,
+  removeJokersFromCards,
+} from "./MeldLogic";
 import {
   CardSuit,
   ChinchonCard,
@@ -15,7 +19,7 @@ const drawCardFromDrawPile: Move<ChinchonGameState> = (G, ctx) => {
   if (!theCard) {
     return INVALID_MOVE;
   }
-  G.playerMap[ctx.currentPlayer].hand.push(theCard);
+  G.players[ctx.currentPlayer].hand.push(theCard);
   ctx.events?.endStage();
 };
 
@@ -24,7 +28,7 @@ const drawCardFromDiscardPile: Move<ChinchonGameState> = (G, ctx) => {
   if (!theCard) {
     return INVALID_MOVE;
   }
-  G.playerMap[ctx.currentPlayer].hand.push(theCard);
+  G.players[ctx.currentPlayer].hand.push(theCard);
   ctx.events?.endStage();
 };
 
@@ -33,7 +37,7 @@ const discardCard: Move<ChinchonGameState> = (
   ctx,
   theCard: ChinchonCard
 ) => {
-  let hand = G.playerMap[ctx.playOrderPos].hand;
+  let hand = G.players[ctx.playOrderPos].hand;
   const idx = hand.findIndex((c) => c.ordinal === theCard.ordinal);
   if (idx < 0) {
     return INVALID_MOVE;
@@ -47,7 +51,7 @@ const meldHandWithCard: Move<ChinchonGameState> = (
   ctx,
   meldCard: ChinchonCard
 ) => {
-  const hand = G.playerMap[ctx.currentPlayer].hand;
+  const hand = G.players[ctx.currentPlayer].hand;
   if (
     !hand.find((c) => c.id === meldCard.id) ||
     !canMeldWithCard(hand, meldCard)
@@ -69,12 +73,10 @@ function scoreAndEliminatePlayers(
   ctx: ChinchonCtx,
   winningHand: ChinchonCard[]
 ) {
-  for (const [pId, player] of Object.entries(G.playerMap)) {
+  for (const [pId, player] of Object.entries(G.players)) {
     player.points += calculatePointsForHand(G, player.hand);
-
     // TODO support buyback logic
-
-    if (player.points >= 30) {
+    if (player.points >= 100) {
       const idx = G.playOrder.indexOf(pId);
       G.playOrder.splice(idx, 1);
       if (idx < G.playOrderPos) {
@@ -85,8 +87,12 @@ function scoreAndEliminatePlayers(
 }
 
 function resetGame(G: ChinchonGameState, ctx: ChinchonCtx) {
-  G.drawPile = ctx.random!.Shuffle(makeDeck());
-  for (let player of Object.values(G.playerMap)) {
+  const deck = makeDeck();
+  if (ctx.numPlayers <= 2) {
+    removeJokersFromCards(deck);
+  }
+  G.drawPile = ctx.random!.Shuffle(deck);
+  for (let player of Object.values(G.players)) {
     player.hand.splice(0, player.hand.length, ...G.drawPile.splice(0, 7));
   }
   G.discardPile = [G.drawPile.pop()!];
@@ -96,8 +102,12 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
   name: "Chinchon",
   maxPlayers: 4,
   setup: (ctx) => {
-    const drawPile = ctx.random!.Shuffle(makeDeck());
-    const playerMap = makePlayerMap(ctx);
+    const deck = makeDeck();
+    if (ctx.numPlayers <= 2) {
+      removeJokersFromCards(deck);
+    }
+    const drawPile = ctx.random!.Shuffle(deck);
+    const playerMap = makePlayers(ctx);
     for (let player of Object.values(playerMap)) {
       player.hand.push(...drawPile.splice(0, 7));
     }
@@ -105,7 +115,7 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
     return {
       drawPile,
       discardPile,
-      playerMap,
+      players: playerMap,
       playOrder: ctx.playOrder,
       playOrderPos: ctx.playOrderPos,
       currentPlayer: ctx.currentPlayer,
@@ -172,7 +182,17 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
   // },
   playerView: (G, ctx, playerID) => {
     // improve this so that players can see how many cards are in other players hands and their points
-    return PlayerView.STRIP_SECRETS(G, ctx, playerID);
+    // return PlayerView.STRIP_SECRETS(G, ctx, playerID);
+    const r = { ...G };
+    r.players = JSON.parse(JSON.stringify(G.players));
+
+    for (const [pID, p] of Object.entries(r.players)) {
+      if (pID !== playerID) {
+        p.handLength = p.hand.length;
+        p.hand = [];
+      }
+    }
+    return r;
   },
 };
 
@@ -226,7 +246,7 @@ export function makeDeck(): ChinchonCard[] {
   return cards;
 }
 
-function makePlayerMap(ctx: Ctx): PlayerMap {
+function makePlayers(ctx: Ctx): PlayerMap {
   let players: PlayerMap = {};
   for (let p of ctx.playOrder) {
     players[p] = {

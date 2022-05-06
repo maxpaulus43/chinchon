@@ -3,8 +3,15 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import CardView from "./CardView";
 import { canMeldWithCard } from "./MeldLogic";
-import { ChinchonCard, ChinchonGameState, ChinchonStage } from "./Model";
+import {
+  ChinchonCard,
+  ChinchonGameState,
+  ChinchonPlayerState,
+  ChinchonStage,
+} from "./Model";
 import Sortable from "sortablejs";
+import OpponentHand from "./OpponentHand";
+import { isAndroid } from "./utils";
 
 interface ChinchonBoardProps extends BoardProps<ChinchonGameState> {}
 
@@ -17,171 +24,129 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
 }) => {
   playerID = playerID!;
   const activePlayers = ctx.activePlayers ?? {};
-  const myPlayer = G.playerMap[playerID];
+  const isMyTurn = ctx.currentPlayer === playerID;
+  const myPlayer = G.players[playerID];
   const myCards = myPlayer.hand;
-  const canDraw = activePlayers[playerID] === ChinchonStage.Draw;
   const canDiscard = activePlayers[playerID] === ChinchonStage.Discard;
   const [selectedCard, setSelectedCard] = useState<ChinchonCard>();
   const isEliminated = !G.playOrder.includes(playerID);
   const myCardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    Sortable.create(myCardsRef.current!, { animation: 200 });
+    const delay = isAndroid() ? 100 : 0;
+    Sortable.create(myCardsRef.current!, {
+      animation: 100,
+      ghostClass: "opacity-0",
+      delay,
+    });
   }, []);
 
-  const emptyCard = (
-    <div
-      className="w-24 border-gray-400 border-2 bg-white rounded-md "
-      style={{ marginRight: -117 }}
-    />
-  );
-
   return (
-    <div className="absolute left-0 right-0 top-0 bottom-0 bg-green-600 flex flex-col justify-center items-center">
-      <div className="flex">
+    <div className="absolute w-full h-full bg-green-600 flex flex-col justify-between items-center p-4">
+      <div className="flex justify-evenly">
+        {G.playOrder
+          .filter((pID) => pID !== playerID)
+          .map((pID) => [pID, G.players[pID]] as [string, ChinchonPlayerState])
+          .map(([pID, p]) => {
+            return (
+              <div className="max-w-sm">
+                <OpponentHand
+                  key={pID}
+                  playerID={pID}
+                  player={p}
+                  highlight={ctx.currentPlayer === pID}
+                />
+              </div>
+            );
+          })}
+      </div>
+
+      <div id="piles" className="flex justify-center">
         <div
+          id="drawPile"
           className="flex mr-5"
           onClick={() => {
             moves.drawCardFromDrawPile();
           }}
         >
-          {/* {new Array(Math.min(G.drawPile.length - 1, 3))
-            .fill(0)
-            .map((i) => emptyCard)} */}
-          <CardView showBack />
+          <div className="w-32">
+            <CardView showBack />
+          </div>
         </div>
 
         <div
-          className="flex"
+          id="discardPile"
+          className="flex "
           onClick={() => {
             moves.drawCardFromDiscardPile();
           }}
         >
           {G.discardPile.length === 0 ? (
-            <div className="w-24 bg-green-700 rounded-md" />
+            <div className="bg-green-700 rounded-md w-32" />
           ) : (
-            <>
-              {/* {new Array(Math.min(G.discardPile.length - 1, 3))
-                .fill(0)
-                .map((i) => emptyCard)} */}
+            <div className="w-32">
               <CardView card={G.discardPile[G.discardPile.length - 1]} />
-            </>
+            </div>
           )}
         </div>
       </div>
-      <div>My Points: {myPlayer.points}</div>
 
-      <div className="absolute bottom-0 flex flex-col items-center">
-        <div className="flex mb-4">
-          {selectedCard && canDiscard && (
-            <Button
-              onClick={() => {
-                setSelectedCard(undefined);
-                moves.discardCard(selectedCard!);
-              }}
-            >
-              Discard
-            </Button>
-          )}
-          {selectedCard &&
-            canDiscard &&
-            canMeldWithCard(myCards, selectedCard) && (
-              <Button
-                onClick={() => {
-                  setSelectedCard(undefined);
-                  moves.meldHandWithCard(selectedCard!);
-                }}
-              >
-                Meld
-              </Button>
-            )}
+      <div id="myCards" className="flex flex-col items-center">
+        <div>
+          My Points: {myPlayer.points}{" "}
+          {!isEliminated && <span className="text-red-500">ELIMINATED</span>}
         </div>
         <div
           ref={myCardsRef}
-          className="p-2 bg-green-700 rounded-md flex justify-evenly pr-6 max-w-xl "
+          className={`p-2 ${
+            isMyTurn ? "bg-yellow-400" : "bg-green-700"
+          } rounded-md flex justify-evenly pr-6 max-w-xl`}
         >
           {myCards.map((c) => (
             <div
-              draggable={true}
               className="-mr-4"
               key={c.id}
               onClick={() => {
-                setSelectedCard(selectedCard?.id === c.id ? undefined : c);
+                if (canDiscard) {
+                  setSelectedCard(selectedCard?.id === c.id ? undefined : c);
+                }
               }}
             >
-              <CardView card={c} highlight={selectedCard?.id === c.id} />
+              <div
+                className={`relative flex flex-col items-center transition ${
+                  selectedCard?.id === c.id ? "-translate-y-4" : ""
+                }`}
+              >
+                <div className="flex flex-col absolute -translate-y-full">
+                  {selectedCard?.id === c.id && canDiscard && (
+                    <Button
+                      onClick={() => {
+                        setSelectedCard(undefined);
+                        moves.discardCard(selectedCard!);
+                      }}
+                    >
+                      Discard
+                    </Button>
+                  )}
+                  {selectedCard?.id === c.id &&
+                    canDiscard &&
+                    canMeldWithCard(myCards, selectedCard) && (
+                      <Button
+                        onClick={() => {
+                          setSelectedCard(undefined);
+                          moves.meldHandWithCard(selectedCard!);
+                        }}
+                      >
+                        Meld
+                      </Button>
+                    )}
+                </div>
+                <CardView card={c} />
+              </div>
             </div>
           ))}
         </div>
       </div>
-    </div>
-  );
-
-  return (
-    <div>
-      {ctx.gameover && <div>Round OVER</div>}
-      <div>My ID: {playerID}</div>
-      <div>My Points: {myPlayer.points}</div>
-      {isEliminated ? (
-        <div>You're Eliminated</div>
-      ) : (
-        <div>
-          <Button onClick={() => undo()}>UNDO</Button>
-          <div>Draw Pile: {G.drawPile.length} cards</div>
-          <div>
-            Discard Pile ({G.discardPile.length} cards):
-            <CardView card={G.discardPile[G.discardPile.length - 1]} />
-          </div>
-          <div>
-            <Button
-              onClick={() => moves.drawCardFromDrawPile()}
-              disabled={!canDraw}
-            >
-              Draw From Draw Pile
-            </Button>
-            <Button
-              onClick={() => moves.drawCardFromDiscardPile()}
-              disabled={!canDraw}
-            >
-              Draw From Discard Pile
-            </Button>
-          </div>
-          <div>
-            {myCards.map((c) => {
-              return (
-                <Button
-                  key={c.id}
-                  onClick={() => {
-                    setSelectedCard(c);
-                  }}
-                  disabled={!canDiscard}
-                  highlight={c.id === selectedCard?.id}
-                >
-                  <CardView card={c} />
-                </Button>
-              );
-            })}
-          </div>
-          {selectedCard && (
-            <div>
-              <Button
-                onClick={() => {
-                  setSelectedCard(undefined);
-                  moves.discardCard(selectedCard!);
-                }}
-              >
-                Discard
-              </Button>
-              <Button
-                onClick={() => moves.meldHandWithCard(selectedCard!)}
-                disabled={!canMeldWithCard(myCards, selectedCard!)}
-              >
-                Meld Hand
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

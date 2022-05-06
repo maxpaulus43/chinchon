@@ -5,10 +5,9 @@ import { ChinchonCard } from "./Model";
 interface CardViewProps {
   card?: ChinchonCard;
   showBack?: boolean;
-  highlight?: boolean;
 }
 
-const CardView: React.FC<CardViewProps> = ({ card, showBack, highlight }) => {
+const CardView: React.FC<CardViewProps> = ({ card, showBack }) => {
   const { loading, error, image } = useCardImage(
     `${showBack ? "card_back" : card?.id ?? "none"}`
   );
@@ -21,11 +20,9 @@ const CardView: React.FC<CardViewProps> = ({ card, showBack, highlight }) => {
   }
   return (
     <img
-      className={`w-24 aspect-auto ${
-        highlight ? "-translate-y-4 transition" : ""
-      }`}
+      className="shadow-2xl"
       src={image}
-      alt={card?.id ?? "none"}
+      alt={showBack ? "face down card" : card?.id ?? "no card"}
     />
   );
 };

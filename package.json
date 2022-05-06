@@ -8,8 +8,8 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    "sortablejs": "^1.15.0"
+    "sortablejs": "^1.15.0",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "PORT=8081 react-scripts start",
@@ -42,6 +42,7 @@
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.4.1",
+    "@types/koa-compress": "^4.0.3",
     "@types/koa-static": "^4.0.2",
     "@types/node": "^16.11.31",
     "@types/react": "^18.0.8",

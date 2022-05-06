@@ -25,3 +25,4 @@ yarn-error.log*
 # custom
 server-build
 .nvmrc
+venv

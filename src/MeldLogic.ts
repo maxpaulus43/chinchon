@@ -166,7 +166,7 @@ function checkRun(cards: ChinchonCard[]): boolean {
  * removed jokers in place
  * @returns the count of jokers that were removed
  */
-function removeJokersFromCards(cards: ChinchonCard[]): number {
+export function removeJokersFromCards(cards: ChinchonCard[]): number {
   let jokerCount = 0;
   for (let i = cards.length - 1; i >= 0; i--) {
     if (cards[i].symbol === "Jo") {

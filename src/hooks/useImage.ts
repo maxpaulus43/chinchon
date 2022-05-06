@@ -8,7 +8,7 @@ const useCardImage = (cardId: string) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await import(`../../images/${cardId}.png`);
+        const response = await import(`../../images/${cardId}.webp`);
         setImage(response.default);
       } catch (err: any) {
         setError(err);

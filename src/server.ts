@@ -17,7 +17,7 @@ const server = Server({
 // Build path relative to the server.js file
 const frontEndAppBuildPath = path.resolve(__dirname, "../build");
 server.app.use(
-  serve(frontEndAppBuildPath, { maxAge: 1000 * 60 * 60 * 24 })
+  serve(frontEndAppBuildPath, { maxAge: 3.154e10 }) // 1 year
 );
 
 server.run({ port: PORT }, () => {

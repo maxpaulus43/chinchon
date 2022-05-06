@@ -8,6 +8,7 @@ import {
   ChinchonGameState,
   ChinchonPlayerState,
   ChinchonStage,
+  GameEndState,
 } from "./Model";
 import Sortable from "sortablejs";
 import OpponentHand from "./OpponentHand";
@@ -20,7 +21,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
   ctx,
   moves,
   playerID,
-  undo,
+  undo, // TODO
 }) => {
   playerID = playerID!;
   const activePlayers = ctx.activePlayers ?? {};
@@ -31,27 +32,81 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
   const [selectedCard, setSelectedCard] = useState<ChinchonCard>();
   const isEliminated = !G.playOrder.includes(playerID);
   const myCardsRef = useRef<HTMLDivElement>(null);
+  const shouldReview = activePlayers[playerID] === ChinchonStage.ReviewRound;
+  const isGameOver = ctx.gameover as GameEndState;
+  const winner = isGameOver && isGameOver.winner;
 
   useEffect(() => {
     const delay = isAndroid() ? 100 : 0;
-    Sortable.create(myCardsRef.current!, {
-      animation: 100,
-      ghostClass: "opacity-0",
-      delay,
-    });
+    if (myCardsRef.current) {
+      Sortable.create(myCardsRef.current, {
+        animation: 100,
+        ghostClass: "opacity-0",
+        delay,
+      });
+    }
   }, []);
 
   return (
-    <div className="absolute w-full h-full bg-green-600 flex flex-col justify-between items-center p-4">
+    <div className="absolute top-0 right-0 bottom-0 left-0 bg-green-600 flex flex-col justify-between items-center p-4">
+      {winner && (
+        <div className="absolute top-1/3 bg-white p-5 rounded-md text-center">
+          <div>{winner === playerID ? "You Won!" : "You Lost"}</div>
+          <div>Winner: Player {winner}</div>
+          <Button
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            Refresh Page
+          </Button>
+        </div>
+      )}
+
+      {shouldReview && (
+        <div className="absolute bg-white p-5 m-5 rounded-md z-10 flex flex-col gap-5 justify-between">
+          <div>Round End Review</div>
+          {G.roundEndState && (
+            <div>
+              {Object.entries(G.roundEndState).map(
+                ([pID, { points, hand }]) => {
+                  return (
+                    <div>
+                      <span>
+                        Player {pID} (+{points} points):
+                      </span>
+                      <span className="flex gap-1">
+                        {hand.map((c) => (
+                          <span className="w-9 hover:scale-[2] transition">
+                            <CardView card={c} />
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          )}
+          <Button
+            onClick={() => {
+              moves.endReview();
+            }}
+          >
+            Next Round (waiting on {Object.keys(ctx.activePlayers ?? {}).length}{" "}
+            more players)
+          </Button>
+        </div>
+      )}
+
       <div className="flex justify-evenly">
         {G.playOrder
           .filter((pID) => pID !== playerID)
           .map((pID) => [pID, G.players[pID]] as [string, ChinchonPlayerState])
           .map(([pID, p]) => {
             return (
-              <div className="max-w-sm">
+              <div key={pID} className="max-w-sm">
                 <OpponentHand
-                  key={pID}
                   playerID={pID}
                   player={p}
                   highlight={ctx.currentPlayer === pID}
@@ -94,7 +149,11 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       <div id="myCards" className="flex flex-col items-center">
         <div>
           My Points: {myPlayer.points}{" "}
-          {!isEliminated && <span className="text-red-500">ELIMINATED</span>}
+          {isEliminated && (
+            <span className="text-red-700 font-bold bg-white p-[0.1rem] rounded-sm">
+              ELIMINATED
+            </span>
+          )}
         </div>
         <div
           ref={myCardsRef}

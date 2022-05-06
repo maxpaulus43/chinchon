@@ -8,10 +8,7 @@ interface OpponentHandProps {
   highlight?: boolean;
 }
 
-const OpponentHand: React.FC<OpponentHandProps> = ({
-  player,
-  highlight,
-}) => {
+const OpponentHand: React.FC<OpponentHandProps> = ({ player, highlight }) => {
   return (
     <div>
       <div
@@ -19,9 +16,9 @@ const OpponentHand: React.FC<OpponentHandProps> = ({
           highlight ? "bg-yellow-400" : ""
         }`}
       >
-        {new Array(player.handLength).fill(0).map((i) => {
+        {new Array(player.handLength).fill(0).map((n, i) => {
           return (
-            <div className=" bg-white shadow-lg -mr-4 rounded-sm">
+            <div className=" bg-white shadow-lg -mr-4 rounded-sm" key={i}>
               <CardView showBack />
             </div>
           );

@@ -4,6 +4,7 @@ export function canMeldWithCard(
   cards: ChinchonCard[],
   meldCard: ChinchonCard
 ): boolean {
+  
   return getMeldablePermutationsForHand(cards, meldCard).length > 0;
 }
 function getMeldablePermutationsForHand(
@@ -30,7 +31,7 @@ function getMeldablePermutationsForHand(
 export function calculatePointsForHand(
   G: ChinchonGameState,
   hand: ChinchonCard[]
-): number {
+): [number, ChinchonCard[]] {
   let result = sumLastNCards(hand);
   let optimalPermutation = hand; // TODO do something with this hand
 
@@ -54,7 +55,7 @@ export function calculatePointsForHand(
     }
   }
 
-  return result;
+  return [result, optimalPermutation];
 }
 
 /**
@@ -150,6 +151,7 @@ function checkRun(cards: ChinchonCard[]): boolean {
   // TODO allow Q,K,A at some point
   cards = cards.slice().sort(cardCompareFn);
   const jokerCount = removeJokersFromCards(cards);
+
   // check that all cards have the same suit
   for (let i = 1; i < cards.length; i++) {
     if (cards[i].suit !== cards[0].suit) {
@@ -177,7 +179,7 @@ export function removeJokersFromCards(cards: ChinchonCard[]): number {
   return jokerCount;
 }
 
-function cardCompareFn(a: ChinchonCard, b: ChinchonCard): number {
+export function cardCompareFn(a: ChinchonCard, b: ChinchonCard): number {
   return a.ordinal - b.ordinal;
 }
 

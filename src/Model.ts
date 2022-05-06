@@ -3,12 +3,12 @@ import type { Ctx, PlayerID } from "boardgame.io";
 export enum ChinchonStage {
   Draw = "draw",
   Discard = "discard",
-  Score = "score",
+  ReviewRound = "reviewround",
 }
 
 export enum ChinchonPhase {
   Play = "play",
-  Score = "score",
+  Review = "review",
 }
 
 export enum CardSuit {
@@ -37,6 +37,13 @@ export interface PlayerMap {
   [playerID: string]: ChinchonPlayerState;
 }
 
+export interface RoundEndState {
+  [playerID: string]: {
+    points: number,
+    hand: ChinchonCard[]
+  };
+}
+
 export interface ChinchonGameState {
   drawPile: ChinchonCard[];
   discardPile: ChinchonCard[];
@@ -44,6 +51,11 @@ export interface ChinchonGameState {
   playOrder: Array<PlayerID>;
   playOrderPos: number;
   currentPlayer: PlayerID;
+  roundEndState: RoundEndState
+}
+
+export interface GameEndState {
+  winner: string
 }
 
 export interface ChinchonCtx extends Ctx {}

@@ -3,6 +3,7 @@ import { INVALID_MOVE } from "boardgame.io/core";
 import {
   calculatePointsForHand,
   canMeldWithCard,
+  cardCompareFn,
   removeJokersFromCards,
 } from "./MeldLogic";
 import {
@@ -10,6 +11,7 @@ import {
   ChinchonCard,
   ChinchonCtx,
   ChinchonGameState,
+  ChinchonPhase,
   ChinchonStage,
   PlayerMap,
 } from "./Model";
@@ -64,8 +66,14 @@ const meldHandWithCard: Move<ChinchonGameState> = (
   );
 
   scoreAndEliminatePlayers(G, ctx, hand);
-  // TODO add a phase where players get to see the end board state.
-  resetGame(G, ctx);
+  ctx.events?.endPhase();
+};
+
+const endReview: Move<ChinchonGameState> = (G, ctx) => {
+  if (!ctx.activePlayers || Object.keys(ctx.activePlayers).length === 1) {
+    resetGame(G, ctx);
+    ctx.events?.endPhase();
+  }
 };
 
 function scoreAndEliminatePlayers(
@@ -74,7 +82,13 @@ function scoreAndEliminatePlayers(
   winningHand: ChinchonCard[]
 ) {
   for (const [pId, player] of Object.entries(G.players)) {
-    player.points += calculatePointsForHand(G, player.hand);
+    const [points, optimalHand] = calculatePointsForHand(G, player.hand);
+    G.roundEndState[pId] = {
+      points,
+      hand: optimalHand
+    }
+
+    player.points += points;
     // TODO support buyback logic
     if (player.points >= 100) {
       const idx = G.playOrder.indexOf(pId);
@@ -94,6 +108,7 @@ function resetGame(G: ChinchonGameState, ctx: ChinchonCtx) {
   G.drawPile = ctx.random!.Shuffle(deck);
   for (let player of Object.values(G.players)) {
     player.hand.splice(0, player.hand.length, ...G.drawPile.splice(0, 7));
+    player.hand.sort(cardCompareFn);
   }
   G.discardPile = [G.drawPile.pop()!];
 }
@@ -110,12 +125,14 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
     const playerMap = makePlayers(ctx);
     for (let player of Object.values(playerMap)) {
       player.hand.push(...drawPile.splice(0, 7));
+      player.hand.sort(cardCompareFn);
     }
     const discardPile = [drawPile.pop()!];
     return {
       drawPile,
       discardPile,
       players: playerMap,
+      roundEndState: {},
       playOrder: ctx.playOrder,
       playOrderPos: ctx.playOrderPos,
       currentPlayer: ctx.currentPlayer,
@@ -123,22 +140,10 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
   },
   endIf: (G) => {
     if (G.playOrder.length === 1) {
-      // return G.playOrder[0];
+      return { winner: G.playOrder[0] };
     }
   },
   turn: {
-    activePlayers: {
-      currentPlayer: ChinchonStage.Draw,
-    },
-    stages: {
-      [ChinchonStage.Draw]: {
-        moves: { drawCardFromDrawPile, drawCardFromDiscardPile },
-        next: ChinchonStage.Discard,
-      },
-      [ChinchonStage.Discard]: {
-        moves: { discardCard, meldHandWithCard },
-      },
-    },
     order: {
       first: (G, ctx) => {
         return ctx.playOrder.indexOf(G.playOrder[G.playOrderPos]);
@@ -151,38 +156,42 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
       G.playOrderPos = (G.playOrderPos + 1) % G.playOrder.length;
     },
   },
-  // phases: {
-  //   [ChinchonPhase.Play]: {
-  //     start: true,
-  //     turn: {
-  //       activePlayers: {
-  //         currentPlayer: ChinchonStage.Draw,
-  //       },
-  //       stages: {
-  //         [ChinchonStage.Draw]: {
-  //           moves: { drawCardFromDrawPile, drawCardFromDiscardPile },
-  //           next: ChinchonStage.Discard,
-  //         },
-  //         [ChinchonStage.Discard]: {
-  //           moves: { discardCard, meldHandWithCard },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   [ChinchonPhase.Score]: {
-  //     turn: {
-  //       stages: {
-  //         [ChinchonStage.Score]: {
-  //           moves: { scoreHandForPlayer },
-  //         },
-  //       },
-  //     },
-  //     next: ChinchonPhase.Play,
-  //   },
-  // },
+  phases: {
+    [ChinchonPhase.Play]: {
+      start: true,
+      turn: {
+        activePlayers: {
+          currentPlayer: ChinchonStage.Draw,
+        },
+        stages: {
+          [ChinchonStage.Draw]: {
+            moves: { drawCardFromDrawPile, drawCardFromDiscardPile },
+            next: ChinchonStage.Discard,
+          },
+          [ChinchonStage.Discard]: {
+            moves: { discardCard, meldHandWithCard },
+          },
+        },
+      },
+      next: ChinchonPhase.Review,
+    },
+    [ChinchonPhase.Review]: {
+      turn: {
+        activePlayers: {
+          all: ChinchonStage.ReviewRound,
+          minMoves: 1,
+          maxMoves: 1,
+        },
+        stages: {
+          [ChinchonStage.ReviewRound]: {
+            moves: { endReview },
+          },
+        },
+      },
+      next: ChinchonPhase.Play,
+    },
+  },
   playerView: (G, ctx, playerID) => {
-    // improve this so that players can see how many cards are in other players hands and their points
-    // return PlayerView.STRIP_SECRETS(G, ctx, playerID);
     const r = { ...G };
     r.players = JSON.parse(JSON.stringify(G.players));
 

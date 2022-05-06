@@ -8,7 +8,7 @@ const server = Server({
   games: [Chinchon],
   origins: [
     // Allow your game site to connect.
-    "https://www.mygame.domain",
+    "https://chinchon-game.herokuapp.com",
     // Allow localhost to connect, except when NODE_ENV is 'production'.
     Origins.LOCALHOST_IN_DEVELOPMENT,
   ],

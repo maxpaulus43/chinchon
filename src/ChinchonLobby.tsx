@@ -8,8 +8,8 @@ interface ChinchonLobbyProps {}
 const ChinchonLobby: React.FC<ChinchonLobbyProps> = () => {
   return (
     <Lobby
-      gameServer={`http://${window.location.hostname}:8081`}
-      lobbyServer={`http://${window.location.hostname}:8081`}
+      gameServer={`${window.location.protocol}//${window.location.hostname}`}
+      lobbyServer={`${window.location.protocol}//${window.location.hostname}`}
       gameComponents={[{ game: Chinchon, board: ChinchonBoard }]}
     />
   );

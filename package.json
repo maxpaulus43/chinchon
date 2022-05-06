@@ -12,12 +12,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "PORT=8081 react-scripts start",
+    "dev": "PORT=8081 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-server": "tsc src/server.ts --outDir server-build --esModuleInterop --module commonjs --skipLibCheck true --downlevelIteration",
-    "prod": "npm run build && npm run build-server && node server-build/server.js"
+    "start": "npm run build && npm run build-server && node server-build/server.js"
   },
   "eslintConfig": {
     "extends": [

@@ -32,8 +32,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-server": "tsc src/server.ts --outDir server-build --esModuleInterop --module commonjs --skipLibCheck true --downlevelIteration",
-    "start": "REACT_APP_PORT=$PORT npm run build && npm run build-server && node server-build/server.js",
-    "local": "PORT=8082 npm start"
+    "start": "npm run build && npm run build-server && node server-build/server.js",
+    "local": "PORT=8082 REACT_APP_PORT=8082 npm start"
   },
   "eslintConfig": {
     "extends": [

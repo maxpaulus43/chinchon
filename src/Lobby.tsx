@@ -173,7 +173,7 @@ const ListGamesView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
               key={m.matchID}
             >
               <div>{m.gameName}</div>
-              <div>{m.players.map((p) => p.name).join(", ")}</div>
+              <div>{m.players.map((p) => p.name ?? "[free]").join(", ")}</div>
               {createMatchButtons(L, m, numPlayers)}
             </div>
           ))}
@@ -199,7 +199,7 @@ const RunningMatchView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
             L.handleExitMatch();
           }}
         >
-          ❌
+          Exit
         </Button>
       </div>
     </div>

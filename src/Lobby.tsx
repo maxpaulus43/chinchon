@@ -53,7 +53,7 @@ interface LobbyRendererProps {
   handleStartMatch: (gameName: string, matchOpts: MatchOpts) => void;
 }
 
-const port = process.env.REACT_APP_PORT
+const port = process.env.REACT_APP_PORT;
 
 const ChinchonLobby: React.FC<ChinchonLobbyProps> = () => {
   let serverAddr = `${window.location.protocol}//${window.location.hostname}`;
@@ -71,6 +71,14 @@ const ChinchonLobby: React.FC<ChinchonLobbyProps> = () => {
             {L.phase === LobbyPhases.ENTER && <EnterLobbyView L={L} />}
             {L.phase === LobbyPhases.LIST && <ListGamesView L={L} />}
             {L.phase === LobbyPhases.PLAY && <RunningMatchView L={L} />}
+
+            {L.errorMsg && (
+              <div className="absolute bottom-5 left-0 right-0 flex justify-center">
+                <div className=" text-center rounded-md bg-red-700 w-2/3 max-w-sm shadow-2xl p-4">
+                  ⚠️{L.errorMsg}
+                </div>
+              </div>
+            )}
           </div>
         );
       }}
@@ -262,7 +270,7 @@ function createMatchButtons(
       </>
     );
   }
-  // allow spectating
+  // TODO add spectate button
   return <div>Match In Progress...</div>;
 }
 

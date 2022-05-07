@@ -53,11 +53,17 @@ interface LobbyRendererProps {
   handleStartMatch: (gameName: string, matchOpts: MatchOpts) => void;
 }
 
+const port = process.env.REACT_APP_PORT
+
 const ChinchonLobby: React.FC<ChinchonLobbyProps> = () => {
+  let serverAddr = `${window.location.protocol}//${window.location.hostname}`;
+  if (port) {
+    serverAddr += ":" + port;
+  }
   return (
     <Lobby
-      gameServer={`${window.location.protocol}//${window.location.hostname}`}
-      lobbyServer={`${window.location.protocol}//${window.location.hostname}`}
+      gameServer={serverAddr}
+      lobbyServer={serverAddr}
       gameComponents={[{ game: Chinchon, board: ChinchonBoard }]}
       renderer={(L) => {
         return (
@@ -79,7 +85,7 @@ export type Match = Omit<Server.MatchData, "players"> & {
 
 const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
   const [playerName, setPlayerName] = useState(L.playerName);
-  const {image} = useCardImage("gh")
+  const { image } = useCardImage("gh");
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <div>Choose a name:</div>
@@ -109,8 +115,11 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
         </Button>
       </div>
       <div>
-        <a href="https://github.com/maxpaulus43/chinchon/blob/main/README.md" className="flex items-center gap-3 underline">
-          How to play chinchon <img src={image} className="w-8" alt="gh"/>
+        <a
+          href="https://github.com/maxpaulus43/chinchon/blob/main/README.md"
+          className="flex items-center gap-3 underline"
+        >
+          How to play chinchon <img src={image} className="w-8" alt="gh" />
         </a>
       </div>
       <div></div>

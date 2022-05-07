@@ -27,12 +27,13 @@
     "typescript": "^4.6.4"
   },
   "scripts": {
-    "dev": "PORT=8081 react-scripts start",
+    "dev": "PORT=8081 REACT_APP_PORT=8082 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build-server": "tsc src/server.ts --outDir server-build --esModuleInterop --module commonjs --skipLibCheck true --downlevelIteration",
-    "start": "npm run build && npm run build-server && node server-build/server.js"
+    "start": "REACT_APP_PORT=$PORT npm run build && npm run build-server && node server-build/server.js",
+    "local": "PORT=8082 npm start"
   },
   "eslintConfig": {
     "extends": [

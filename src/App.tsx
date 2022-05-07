@@ -4,8 +4,8 @@ import { Chinchon } from "./Game";
 import ChinchonBoard from "./Board";
 import Lobby from "./Lobby";
 
-const showLobby = true;
-const isDebug = false;
+const hideLobby = process.env.REACT_APP_HIDE_LOBBY;
+const isDebug = true;
 
 const ChinchonClient = Client({
   game: Chinchon,
@@ -16,9 +16,7 @@ const ChinchonClient = Client({
 });
 
 const App: React.FC = () => {
-  return showLobby ? (
-    <Lobby />
-  ) : (
+  return hideLobby ? (
     <div className="absolute w-full h-full flex gap-3 flex-wrap">
       <div className="relative w-96 h-full">
         <ChinchonClient playerID="0" />
@@ -30,6 +28,8 @@ const App: React.FC = () => {
         <ChinchonClient playerID="2" />
       </div>
     </div>
+  ) : (
+    <Lobby />
   );
 };
 

@@ -1,3 +1,4 @@
+[play the game here](https://chinchon-game.herokuapp.com) (heroku takes ~30 seconds cold start the game server, so be patient).
 
 # Chinchón (2-4 players)
 
@@ -25,3 +26,12 @@ When one of the players reaches 100 or more, they may "buy back in" exactly one 
 ## Game End
 
 ![game end](media/game_end.png)
+
+## Local Development
+
+1. `npm install`
+1. to run the game server, use `npm run local`
+1. to run the dev UI server, use `npm run dev`. Requires game server to be running
+1. go to `localhost:8081` to see the game. This UI will dynamically update as you change the UI.
+1. go to `localhost:8082` to see a more productionized version of the game. It's basically the same as `localhost:8081`.
+1. to hide the lobby for easier debugging, use `REACT_APP_HIDE_LOBBY=true npm run dev`

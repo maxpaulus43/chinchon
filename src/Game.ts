@@ -40,7 +40,7 @@ const discardCard: Move<ChinchonGameState> = (
   theCard: ChinchonCard
 ) => {
   let hand = G.players[ctx.playOrderPos].hand;
-  const idx = hand.findIndex((c) => c.ordinal === theCard.ordinal);
+  const idx = hand.findIndex((c) => c.id === theCard.id);
   if (idx < 0) {
     return INVALID_MOVE;
   }

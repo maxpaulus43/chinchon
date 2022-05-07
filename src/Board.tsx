@@ -180,8 +180,8 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
                   {selectedCard?.id === c.id && canDiscard && (
                     <Button
                       onClick={() => {
-                        setSelectedCard(undefined);
                         moves.discardCard(selectedCard!);
+                        setSelectedCard(undefined);
                       }}
                     >
                       Discard

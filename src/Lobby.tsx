@@ -110,7 +110,7 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
       </div>
       <div>
         <a href="https://github.com/maxpaulus43/chinchon/blob/main/README.md" className="flex items-center gap-3 underline">
-          How to play chinchon <img src={image} className="w-8"/>
+          How to play chinchon <img src={image} className="w-8" alt="gh"/>
         </a>
       </div>
       <div></div>

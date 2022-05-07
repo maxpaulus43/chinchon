@@ -72,13 +72,13 @@ const ChinchonLobby: React.FC<ChinchonLobbyProps> = () => {
             {L.phase === LobbyPhases.LIST && <ListGamesView L={L} />}
             {L.phase === LobbyPhases.PLAY && <RunningMatchView L={L} />}
 
-            {L.errorMsg && (
+            {/* {L.errorMsg && (
               <div className="absolute bottom-5 left-0 right-0 flex justify-center">
                 <div className=" text-center rounded-md bg-red-700 w-2/3 max-w-sm shadow-2xl p-4">
                   ⚠️{L.errorMsg}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         );
       }}
@@ -137,6 +137,14 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
 
 const ListGamesView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
   const [numPlayers, setNumPlayers] = useState(2);
+  const matches = []
+  const seen = new Set<string>()
+  for (const m of L.matches) {
+    if (!seen.has(m.matchID)) {
+      matches.push(m)
+      seen.add(m.matchID)
+    }
+  }
 
   return (
     <div className="p-2">
@@ -175,7 +183,7 @@ const ListGamesView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
           </div>
 
           <div className="text-lg">Join a Match</div>
-          {L.matches.map((m) => (
+          {matches.map((m) => (
             <div
               className="flex gap-3 justify-between items-center border-b-2 border-black"
               key={m.matchID}

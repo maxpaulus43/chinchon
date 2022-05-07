@@ -3,7 +3,7 @@ import path from "path";
 import serve from "koa-static";
 import { Chinchon } from "./Game";
 
-const PORT = parseInt(process.env.PORT ?? "8081");
+const PORT = parseInt(process.env.PORT ?? "8082");
 const server = Server({
   games: [Chinchon],
   origins: [

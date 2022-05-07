@@ -6,6 +6,7 @@ import { canMeldWithCard } from "./MeldLogic";
 import {
   ChinchonCard,
   ChinchonGameState,
+  ChinchonPhase,
   ChinchonPlayerState,
   ChinchonStage,
   GameEndState,
@@ -13,6 +14,8 @@ import {
 import Sortable from "sortablejs";
 import OpponentHand from "./OpponentHand";
 import { isAndroid } from "./utils";
+import EndGameInfo from "./EndGameInfo";
+import EndRoundInfo from "./EndRoundInfo";
 
 interface ChinchonBoardProps extends BoardProps<ChinchonGameState> {}
 
@@ -37,69 +40,49 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
   const winner = isGameOver && isGameOver.winner;
 
   useEffect(() => {
-    const delay = isAndroid() ? 100 : 0;
     if (myCardsRef.current) {
       Sortable.create(myCardsRef.current, {
         animation: 100,
         ghostClass: "opacity-0",
-        delay,
+        delay: isAndroid() ? 100 : 0,
       });
     }
   }, []);
 
+  let roundEndString = undefined;
+  if (ctx.phase === ChinchonPhase.Review) {
+    roundEndString = "Waiting on";
+    const activePlayerIDs = Object.keys(ctx.activePlayers ?? {});
+    if (activePlayerIDs.includes(playerID)) {
+      roundEndString += " You";
+      if (activePlayerIDs.length > 1) {
+        const plural = activePlayerIDs.length - 1 > 0 ? "s" : "";
+        roundEndString += ` and ${
+          activePlayerIDs.length - 1
+        } other player${plural}`;
+      }
+    } else if (activePlayerIDs.length > 0) {
+      const plural = activePlayerIDs.length > 1 ? "s" : "";
+      roundEndString += ` ${activePlayerIDs.length} other player${plural}`;
+    }
+    roundEndString += " to end the round";
+  }
+
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 bg-green-600 flex flex-col justify-between items-center p-4">
-      {winner && (
-        <div className="absolute top-1/3 bg-white p-5 rounded-md text-center">
-          <div>{winner === playerID ? "You Won!" : "You Lost"}</div>
-          <div>Winner: Player {winner}</div>
-          <Button
-            onClick={() => {
-              window.location.reload();
-            }}
-          >
-            Refresh Page
-          </Button>
-        </div>
-      )}
+      {winner && <EndGameInfo didIWin={winner === playerID} winner={winner} />}
 
       {shouldReview && (
-        <div className="absolute bg-white p-5 m-5 rounded-md z-10 flex flex-col gap-5 justify-between">
-          <div>Round End Review</div>
-          {G.roundEndState && (
-            <div>
-              {Object.entries(G.roundEndState).map(
-                ([pID, { points, hand }]) => {
-                  return (
-                    <div>
-                      <span>
-                        Player {pID} (+{points} points):
-                      </span>
-                      <span className="flex gap-1">
-                        {hand.map((c) => (
-                          <span className="w-9 hover:scale-[2] transition">
-                            <CardView card={c} />
-                          </span>
-                        ))}
-                      </span>
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          )}
-          <Button
-            onClick={() => {
-              moves.endReview();
-            }}
-          >
-            Next Round (waiting on {Object.keys(ctx.activePlayers ?? {}).length}{" "}
-            more players)
-          </Button>
+        <EndRoundInfo G={G} ctx={ctx} onClose={() => moves.endReview()} />
+      )}
+
+      {roundEndString && (
+        <div className="bg-green-900 p-5 m-5 rounded-md z-10">
+          {roundEndString}
         </div>
       )}
 
-      <div className="flex justify-evenly">
+      <div id="opponentCards" className="flex justify-evenly">
         {G.playOrder
           .filter((pID) => pID !== playerID)
           .map((pID) => [pID, G.players[pID]] as [string, ChinchonPlayerState])
@@ -147,19 +130,17 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       </div>
 
       <div id="myCards" className="flex flex-col items-center">
-        <div>
-          My Points: {myPlayer.points}{" "}
-          {isEliminated && (
-            <span className="text-red-700 font-bold bg-white p-[0.1rem] rounded-sm">
-              ELIMINATED
-            </span>
-          )}
-        </div>
+        {isEliminated && (
+          <div className="text-red-700 font-bold bg-white p-[0.1rem] rounded-sm">
+            ELIMINATED
+          </div>
+        )}
+        <div>My Points: {myPlayer.points}</div>
         <div
           ref={myCardsRef}
-          className={`p-2 ${
+          className={`p-2 rounded-md flex justify-evenly pr-6 max-w-xl ${
             isMyTurn ? "bg-yellow-400" : "bg-green-700"
-          } rounded-md flex justify-evenly pr-6 max-w-xl`}
+          } `}
         >
           {myCards.map((c) => (
             <div

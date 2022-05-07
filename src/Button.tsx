@@ -2,24 +2,11 @@ interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
   highlight?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  disabled,
-  onClick,
-  highlight,
-}) => {
-  return disabled ? (
+const Button: React.FC<ButtonProps> = ({ children, disabled, onClick }) => {
+  return (
     <button
-      className="bg-blue-500 text-white py-2 px-4 rounded opacity-80 cursor-not-allowed m-1"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  ) : (
-    <button
-      className={`bg-blue-500 hover:bg-blue-700 text-white m-1 py-2 px-4 rounded ${
-        highlight ? "bg-yellow-500 hover:bg-yellow-500" : ""
+      className={`bg-orange-500 text-white py-2 px-4 m-1 rounded ${
+        disabled ? "opacity-80 cursor-not-allowed" : "hover:bg-orange-700"
       }`}
       onClick={onClick}
       disabled={disabled}

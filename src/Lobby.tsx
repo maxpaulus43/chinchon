@@ -4,6 +4,7 @@ import { Chinchon } from "./Game";
 import ChinchonBoard from "./Board";
 import Button from "./Button";
 import { Game, LobbyAPI, Server } from "boardgame.io";
+import useCardImage from "./hooks/useImage";
 
 enum LobbyPhases {
   ENTER = "enter",
@@ -78,6 +79,7 @@ export type Match = Omit<Server.MatchData, "players"> & {
 
 const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
   const [playerName, setPlayerName] = useState(L.playerName);
+  const {image} = useCardImage("gh")
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <div>Choose a name:</div>
@@ -106,8 +108,12 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
           Enter
         </Button>
       </div>
-
-      <br />
+      <div>
+        <a href="https://github.com/maxpaulus43/chinchon/blob/main/README.md" className="flex items-center gap-3 underline">
+          How to play chinchon <img src={image} className="w-8"/>
+        </a>
+      </div>
+      <div></div>
     </div>
   );
 };

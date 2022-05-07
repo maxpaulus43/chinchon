@@ -1,46 +1,13 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Chinchón (2-4 players)
 
-## Available Scripts
+The rules of Chinchón are very similar to those of [Gin Rummy](https://en.wikipedia.org/wiki/Gin_Rummy). Seven cards are dealt to each player, and the remaining cards of the deck are laid on the table face down to form the stock. The top card of this pile is then turned face up and laid beside the stock to start the discard pile. The players look at and sort their cards, and then play by turns. Each turn consists of a draw and a discard:
 
-In the project directory, you can run:
+- One card is taken from the top of either the stock (face down) pile or the discard (face up) pile, and added to the player's hand.
+- The player can then try to make combos in their hand with the new card. Each combo in the hand must have at least 3 cards, and may be a set (e.g. three 9's) or a run (e.g. 7,8,9,10). Runs must be of the same suit.
+- After that, one card must be discarded from the player's hand and placed on top of the discard pile face up, so that the player always has seven cards in their hand.
+- If playing with more than two players, allow the use of 2 Jokers as wild cards.
 
-### `npm start`
+Once a player has enough combos, they may decide to "meld" their cards, laying off their hand on the table, and the round ends. That can be done when the player has 0-1 unmatched cards less than or equal to 5, called *"deadwood"* in Rummy. Each of the players score penalty points equivalent to the sum of the face value of the unmatched cards left in their hand. If a player has no unmatched cards, they earn a bonus of -10 points. A player automatically wins the game if they manage to make a run of seven cards, called Chinchón. If the game includes Jokers as wild cards, a run with a Joker doesn't count as a true chinchón and doesn't win the game, but still allows the -10 points bonus. If the round ends and you were not the player to end the round and you have a joker in your hand it counts for 50 penalty points.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+When one of the players reaches 100 or more, they may "buy back in" exactly one time. A player who buys back in will reset their points to the second highest point total among players. When that player reaches 100 or more again, they are permanently out of the game. The last remaining player wins.

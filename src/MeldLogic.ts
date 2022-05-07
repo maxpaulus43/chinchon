@@ -4,6 +4,7 @@ export function canMeldWithCard(
   cards: ChinchonCard[],
   meldCard: ChinchonCard
 ): boolean {
+  return true;
   return getMeldablePermutationsForHand(cards, meldCard).length > 0;
 }
 function getMeldablePermutationsForHand(

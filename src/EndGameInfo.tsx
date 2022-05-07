@@ -8,7 +8,7 @@ interface WinnerModalProps {
 
 const WinnerModal: React.FC<WinnerModalProps> = ({didIWin, winner}) => {
   return (
-    <div className="absolute top-1/3 bg-white p-5 rounded-md text-center">
+    <div className="absolute top-1/3 bg-green-900 p-5 rounded-md text-center">
       <div>{didIWin ? "You Won!" : "You Lost"}</div>
       <div>Winner: Player {winner}</div>
       <Button

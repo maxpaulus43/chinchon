@@ -11,3 +11,17 @@ The rules of Chinchón are very similar to those of [Gin Rummy](https://en.wikip
 Once a player has enough combos, they may decide to "meld" their cards, laying off their hand on the table, and the round ends. That can be done when the player has 0-1 unmatched cards less than or equal to 5, called *"deadwood"* in Rummy. Each of the players score penalty points equivalent to the sum of the face value of the unmatched cards left in their hand. If a player has no unmatched cards, they earn a bonus of -10 points. A player automatically wins the game if they manage to make a run of seven cards, called Chinchón. If the game includes Jokers as wild cards, a run with a Joker doesn't count as a true chinchón and doesn't win the game, but still allows the -10 points bonus. If the round ends and you were not the player to end the round and you have a joker in your hand it counts for 50 penalty points.
 
 When one of the players reaches 100 or more, they may "buy back in" exactly one time. A player who buys back in will reset their points to the second highest point total among players. When that player reaches 100 or more again, they are permanently out of the game. The last remaining player wins.
+
+# ScreenShots
+
+## Lobby/GamePlay
+
+![gameplay gif](media/gameplay.gif)
+
+## Round End
+
+![round end](media/round_end.png)
+
+## Game End
+
+![game end](media/game_end.png)

@@ -65,7 +65,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       const plural = activePlayerIDs.length > 1 ? "s" : "";
       roundEndString += ` ${activePlayerIDs.length} other player${plural}`;
     }
-    roundEndString += " to end the round";
+    roundEndString += " to end the round...";
   }
 
   return (
@@ -77,7 +77,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       )}
 
       {roundEndString && (
-        <div className="bg-green-900 p-5 m-5 rounded-md z-10">
+        <div className="absolute bg-green-900 p-5 m-5 rounded-md z-10 w-36">
           {roundEndString}
         </div>
       )}

@@ -22,7 +22,7 @@ const drawCardFromDrawPile: Move<ChinchonGameState> = (G, ctx) => {
     return INVALID_MOVE;
   }
 
-  if (G.drawPile.length == 0) {
+  if (G.drawPile.length === 0) {
     const newDrawPile = G.discardPile.splice(0, G.discardPile.length - 1);
     ctx.random!.Shuffle(newDrawPile);
     G.drawPile = newDrawPile;

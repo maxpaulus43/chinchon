@@ -8,9 +8,14 @@ interface OpponentHandProps {
   highlight?: boolean;
 }
 
-const OpponentHand: React.FC<OpponentHandProps> = ({ player, highlight }) => {
+const OpponentHand: React.FC<OpponentHandProps> = ({
+  playerID,
+  player,
+  highlight,
+}) => {
   return (
     <div>
+      <div className="text-center">Player {playerID}</div>
       <div
         className={`flex p-1 pr-5 rounded-md ${
           highlight ? "bg-yellow-400" : ""

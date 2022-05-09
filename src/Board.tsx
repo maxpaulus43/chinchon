@@ -143,6 +143,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
             ELIMINATED
           </div>
         )}
+        <div>Player {playerID}</div>
         <div>My Points: {myPlayer.points}</div>
         <div
           ref={myCardsRef}

@@ -96,6 +96,7 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
   const { image } = useCardImage("gh");
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
+      <h1 className="text-2xl font-serif">Chinchón</h1>
       <div>Choose a name:</div>
 
       <div>
@@ -131,7 +132,7 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
           href="https://github.com/maxpaulus43/chinchon/blob/main/README.md"
           className="flex items-center gap-3 underline"
         >
-          How to play chinchon <img src={image} className="w-8" alt="gh" />
+          How to play Chinchón <img src={image} className="w-8" alt="gh" />
         </a>
       </div>
       <div></div>

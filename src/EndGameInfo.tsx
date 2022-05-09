@@ -1,24 +1,29 @@
 import React from "react";
 import Button from "./Button";
+import EndRoundInfo from "./EndRoundInfo";
+import { ChinchonGameState } from "./Model";
 
 interface WinnerModalProps {
-    didIWin: boolean;
-    winner: string;
+  G: ChinchonGameState;
+  didIWin: boolean;
+  winner: string;
 }
 
-const WinnerModal: React.FC<WinnerModalProps> = ({didIWin, winner}) => {
+const WinnerModal: React.FC<WinnerModalProps> = ({ G, didIWin, winner }) => {
   return (
-    <div className="absolute top-1/3 bg-green-900 p-5 rounded-md text-center">
-      <div>{didIWin ? "You Won!" : "You Lost"}</div>
-      <div>Winner: Player {winner}</div>
-      <Button
-        onClick={() => {
-          window.location.reload();
-        }}
-      >
-        Refresh Page
-      </Button>
-    </div>
+    <EndRoundInfo
+      title={didIWin ? "You Won the Game!" : `You Lost the Game (Player ${winner} won)`}
+      G={G}
+      callToAction={() => (
+        <Button
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Refresh Page
+        </Button>
+      )}
+    />
   );
 };
 

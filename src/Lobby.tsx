@@ -102,7 +102,11 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
         <input
           className="border-2 border-blue-300 rounded-md p-1"
           type="text"
+          placeholder="Visitor"
           value={playerName}
+          onFocus={()=>{
+            setPlayerName("");
+          }}
           onChange={(e) => {
             setPlayerName(e.target.value);
           }}

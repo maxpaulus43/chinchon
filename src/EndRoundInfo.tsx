@@ -1,17 +1,23 @@
 import React from "react";
-import Button from "./Button";
 import CardView from "./CardView";
-import { ChinchonCtx, ChinchonGameState } from "./Model";
+import { ChinchonGameState } from "./Model";
 
 interface EndRoundInfoProps {
   G: ChinchonGameState;
-  ctx: ChinchonCtx;
-  onClose: () => void;
+  title?: string;
+  footer?: string;
+  callToAction: () => JSX.Element;
 }
 
-const EndRoundInfo: React.FC<EndRoundInfoProps> = ({ G, ctx, onClose }) => {
+const EndRoundInfo: React.FC<EndRoundInfoProps> = ({
+  G,
+  title,
+  footer,
+  callToAction,
+}) => {
   return (
     <div className="absolute bg-green-900 p-5 m-5 rounded-md z-20 flex flex-col gap-5 justify-between">
+      {title && <div className="text-lg">{title}</div>}
       <div>Round End Review</div>
       {G.roundEndState && (
         <div>
@@ -33,13 +39,8 @@ const EndRoundInfo: React.FC<EndRoundInfoProps> = ({ G, ctx, onClose }) => {
           })}
         </div>
       )}
-      <Button
-        onClick={() => {
-          onClose();
-        }}
-      >
-        Start Next Round
-      </Button>
+      {callToAction()}
+      {footer && <div>{footer}</div>}
     </div>
   );
 };

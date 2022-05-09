@@ -70,10 +70,18 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
 
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 bg-green-600 flex flex-col justify-between items-center p-4">
-      {winner && <EndGameInfo didIWin={winner === playerID} winner={winner} />}
+      {winner && (
+        <EndGameInfo G={G} didIWin={winner === playerID} winner={winner} />
+      )}
 
       {shouldReview && (
-        <EndRoundInfo G={G} ctx={ctx} onClose={() => moves.endReview()} />
+          <EndRoundInfo
+            G={G}
+            callToAction={() => (
+              <Button onClick={() => moves.endReview()}>Next Round</Button>
+            )}
+            footer={roundEndString}
+          />
       )}
 
       {roundEndString && (
@@ -83,7 +91,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       )}
 
       <div id="opponentCards" className="flex justify-evenly">
-        {G.playOrder
+        {ctx.playOrder
           .filter((pID) => pID !== playerID)
           .map((pID) => [pID, G.players[pID]] as [string, ChinchonPlayerState])
           .map(([pID, p]) => {

@@ -15,17 +15,21 @@ When one of the players reaches 100 or more, they may "buy back in" exactly one 
 
 # ScreenShots
 
-## Lobby/GamePlay
+## Lobby
+
+![lobby gif](media/lobby.gif)
+
+## Gameplay
 
 ![gameplay gif](media/gameplay.gif)
 
 ## Round End
 
-![round end](media/round_end.png)
+![round end](media/round_end.gif)
 
 ## Game End
 
-![game end](media/game_end.png)
+![game end](media/game_end.gif)
 
 ## Local Development
 

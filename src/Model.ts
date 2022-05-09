@@ -28,7 +28,7 @@ export interface ChinchonCard {
 
 export interface ChinchonPlayerState {
   hand: ChinchonCard[];
-  handLength?: number
+  handLength: number
   points: number;
   didBuyIn: boolean;
 }
@@ -46,11 +46,12 @@ export interface RoundEndState {
 
 export interface ChinchonGameState {
   drawPile: ChinchonCard[];
+  drawPileLen: number;
   discardPile: ChinchonCard[];
+  discardPileLen: number;
   players: PlayerMap;
   playOrder: Array<PlayerID>;
   playOrderPos: number;
-  currentPlayer: PlayerID;
   roundEndState: RoundEndState
 }
 

@@ -5,12 +5,14 @@ import { ChinchonPlayerState } from "./Model";
 interface OpponentHandProps {
   playerID: string;
   player: ChinchonPlayerState;
+  faceUp?: boolean;
   highlight?: boolean;
 }
 
 const OpponentHand: React.FC<OpponentHandProps> = ({
   playerID,
   player,
+  faceUp,
   highlight,
 }) => {
   return (
@@ -24,7 +26,13 @@ const OpponentHand: React.FC<OpponentHandProps> = ({
         {new Array(player.handLength).fill(0).map((n, i) => {
           return (
             <div className=" bg-white shadow-lg -mr-4 rounded-sm" key={i}>
-              <CardView showBack />
+              {faceUp ? (
+                <div className="transition hover:scale-[2]">
+                  <CardView card={player.hand[i]} />
+                </div>
+              ) : (
+                <CardView showBack />
+              )}
             </div>
           );
         })}

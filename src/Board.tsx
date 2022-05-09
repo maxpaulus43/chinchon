@@ -24,8 +24,9 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
   ctx,
   moves,
   playerID,
-  undo, // TODO
+  undo, // TODO undo
 }) => {
+  // TODO Spectators don't have a playerID
   playerID = playerID!;
   const activePlayers = ctx.activePlayers ?? {};
   const isMyTurn = ctx.currentPlayer === playerID;
@@ -33,7 +34,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
   const myCards = myPlayer.hand;
   const canDiscard = activePlayers[playerID] === ChinchonStage.Discard;
   const [selectedCard, setSelectedCard] = useState<ChinchonCard>();
-  const isEliminated = !G.playOrder.includes(playerID);
+  const isEliminated = !playerID || !G.playOrder.includes(playerID);
   const myCardsRef = useRef<HTMLDivElement>(null);
   const shouldReview = activePlayers[playerID] === ChinchonStage.ReviewRound;
   const isGameOver = ctx.gameover as GameEndState;
@@ -75,13 +76,13 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       )}
 
       {shouldReview && (
-          <EndRoundInfo
-            G={G}
-            callToAction={() => (
-              <Button onClick={() => moves.endReview()}>Next Round</Button>
-            )}
-            footer={roundEndString}
-          />
+        <EndRoundInfo
+          G={G}
+          callToAction={() => (
+            <Button onClick={() => moves.endReview()}>Next Round</Button>
+          )}
+          footer={roundEndString}
+        />
       )}
 
       {roundEndString && (
@@ -98,6 +99,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
             return (
               <div key={pID} className="max-w-sm">
                 <OpponentHand
+                  faceUp={isEliminated}
                   playerID={pID}
                   player={p}
                   highlight={ctx.currentPlayer === pID}
@@ -110,7 +112,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       <div id="piles" className="flex justify-center">
         <div
           id="drawPile"
-          className="flex mr-5"
+          className="flex mr-5 flex-col text-center"
           onClick={() => {
             moves.drawCardFromDrawPile();
           }}
@@ -118,6 +120,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
           <div className="w-32">
             <CardView showBack />
           </div>
+          <div>{G.drawPileLen} cards left</div>
         </div>
 
         <div
@@ -130,8 +133,11 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
           {G.discardPile.length === 0 ? (
             <div className="bg-green-700 rounded-md w-32" />
           ) : (
-            <div className="w-32">
-              <CardView card={G.discardPile[G.discardPile.length - 1]} />
+            <div className="flex flex-col text-center">
+              <div className="w-32">
+                <CardView card={G.discardPile[G.discardPile.length - 1]} />
+              </div>
+              <div>{G.discardPileLen} cards</div>
             </div>
           )}
         </div>

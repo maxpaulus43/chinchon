@@ -21,7 +21,18 @@ const drawCardFromDrawPile: Move<ChinchonGameState> = (G, ctx) => {
   if (!theCard) {
     return INVALID_MOVE;
   }
-  G.players[ctx.currentPlayer].hand.push(theCard);
+
+  if (G.drawPile.length == 0) {
+    const newDrawPile = G.discardPile.splice(0, G.discardPile.length - 1);
+    ctx.random!.Shuffle(newDrawPile);
+    G.drawPile = newDrawPile;
+  }
+
+  G.discardPileLen = G.discardPile.length;
+  G.drawPileLen = G.drawPile.length;
+  const p = G.players[ctx.currentPlayer];
+  p.hand.push(theCard);
+  p.handLength = p.hand.length;
   ctx.events?.endStage();
 };
 
@@ -30,7 +41,11 @@ const drawCardFromDiscardPile: Move<ChinchonGameState> = (G, ctx) => {
   if (!theCard) {
     return INVALID_MOVE;
   }
-  G.players[ctx.currentPlayer].hand.push(theCard);
+
+  const p = G.players[ctx.currentPlayer];
+  p.hand.push(theCard);
+  p.handLength = p.hand.length;
+  G.discardPileLen = G.discardPile.length;
   ctx.events?.endStage();
 };
 
@@ -39,12 +54,16 @@ const discardCard: Move<ChinchonGameState> = (
   ctx,
   theCard: ChinchonCard
 ) => {
-  let hand = G.players[ctx.playOrderPos].hand;
+  const p = G.players[ctx.currentPlayer];
+  const hand = p.hand;
   const idx = hand.findIndex((c) => c.id === theCard.id);
   if (idx < 0) {
     return INVALID_MOVE;
   }
-  G.discardPile.push(hand.splice(idx, 1)[0]);
+  const discardedCard = hand.splice(idx, 1)[0];
+  p.handLength = hand.length;
+  G.discardPile.push(discardedCard);
+  G.discardPileLen = G.discardPile.length;
   ctx.events?.endTurn();
 };
 
@@ -54,17 +73,11 @@ const meldHandWithCard: Move<ChinchonGameState> = (
   meldCard: ChinchonCard
 ) => {
   const hand = G.players[ctx.currentPlayer].hand;
-  if (
-    !hand.find((c) => c.id === meldCard.id) ||
-    !canMeldWithCard(hand, meldCard)
-  ) {
+  const meldCardIdx = hand.findIndex((c) => c.id === meldCard.id);
+  if (meldCardIdx < 0 || !canMeldWithCard(hand, meldCard)) {
     return INVALID_MOVE;
   }
-  hand.splice(
-    hand.findIndex((c) => c.id === meldCard.id),
-    1
-  );
-
+  hand.splice(meldCardIdx, 1);
   scoreAndEliminatePlayers(G, ctx, hand);
   ctx.events?.endPhase();
 };
@@ -111,6 +124,8 @@ function resetGame(G: ChinchonGameState, ctx: ChinchonCtx) {
     player.hand.sort(cardCompareFn);
   }
   G.discardPile = [G.drawPile.pop()!];
+  G.drawPileLen = G.drawPile.length;
+  G.discardPileLen = G.discardPile.length;
 }
 
 export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
@@ -126,11 +141,14 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
     for (let player of Object.values(playerMap)) {
       player.hand.push(...drawPile.splice(0, 7));
       player.hand.sort(cardCompareFn);
+      player.handLength = player.hand.length;
     }
     const discardPile = [drawPile.pop()!];
     return {
       drawPile,
+      drawPileLen: drawPile.length,
       discardPile,
+      discardPileLen: discardPile.length,
       players: playerMap,
       roundEndState: {},
       playOrder: ctx.playOrder,
@@ -197,16 +215,24 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
     },
   },
   playerView: (G, ctx, playerID) => {
-    const r = { ...G };
-    r.players = JSON.parse(JSON.stringify(G.players));
+    // TODO if player is eliminated, show them the entire game state (basically, allow them to spectate)
+    if (!playerID || !G.playOrder.includes(playerID)) {
+      return G;
+    }
 
-    for (const [pID, p] of Object.entries(r.players)) {
+    const GG = { ...G };
+
+    GG.drawPile = [];
+    GG.discardPile = GG.discardPile.slice(GG.discardPile.length - 1);
+    GG.players = JSON.parse(JSON.stringify(G.players));
+
+    for (const [pID, p] of Object.entries(GG.players)) {
       if (pID !== playerID) {
         p.handLength = p.hand.length;
         p.hand = [];
       }
     }
-    return r;
+    return GG;
   },
 };
 
@@ -265,6 +291,7 @@ function makePlayers(ctx: Ctx): PlayerMap {
   for (let p of ctx.playOrder) {
     players[p] = {
       hand: [],
+      handLength: 0,
       points: 0,
       didBuyIn: false,
     };

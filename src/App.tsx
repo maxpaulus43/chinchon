@@ -10,7 +10,7 @@ const isDebug = true;
 const ChinchonClient = Client({
   game: Chinchon,
   board: ChinchonBoard,
-  numPlayers: 3,
+  numPlayers: 4,
   debug: isDebug,
   multiplayer: Local(),
 });
@@ -26,6 +26,9 @@ const App: React.FC = () => {
       </div>
       <div className="relative w-96 h-full">
         <ChinchonClient playerID="2" />
+      </div>
+      <div className="relative w-96 h-full">
+        <ChinchonClient playerID="3" />
       </div>
     </div>
   ) : (

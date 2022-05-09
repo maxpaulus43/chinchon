@@ -1,4 +1,4 @@
-import { Game, Ctx, Move } from "boardgame.io";
+import { Game, Ctx, Move, PlayerID, StageArg } from "boardgame.io";
 import { INVALID_MOVE } from "boardgame.io/core";
 import {
   calculatePointsForHand,
@@ -85,8 +85,8 @@ function scoreAndEliminatePlayers(
     const [points, optimalHand] = calculatePointsForHand(G, player.hand);
     G.roundEndState[pId] = {
       points,
-      hand: optimalHand
-    }
+      hand: optimalHand,
+    };
 
     player.points += points;
     // TODO support buyback logic
@@ -143,23 +143,21 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
       return { winner: G.playOrder[0] };
     }
   },
-  turn: {
-    order: {
-      first: (G, ctx) => {
-        return ctx.playOrder.indexOf(G.playOrder[G.playOrderPos]);
-      },
-      next: (G, ctx) => {
-        return ctx.playOrder.indexOf(G.playOrder[G.playOrderPos]);
-      },
-    },
-    onEnd: (G) => {
-      G.playOrderPos = (G.playOrderPos + 1) % G.playOrder.length;
-    },
-  },
   phases: {
     [ChinchonPhase.Play]: {
       start: true,
       turn: {
+        order: {
+          first: (G, ctx) => {
+            return ctx.playOrder.indexOf(G.playOrder[G.playOrderPos]);
+          },
+          next: (G, ctx) => {
+            return ctx.playOrder.indexOf(G.playOrder[G.playOrderPos]);
+          },
+        },
+        onEnd: (G) => {
+          G.playOrderPos = (G.playOrderPos + 1) % G.playOrder.length;
+        },
         activePlayers: {
           currentPlayer: ChinchonStage.Draw,
         },
@@ -177,10 +175,17 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
     },
     [ChinchonPhase.Review]: {
       turn: {
-        activePlayers: {
-          all: ChinchonStage.ReviewRound,
-          minMoves: 1,
-          maxMoves: 1,
+        onBegin: (G, ctx) => {
+          const activePlayersValue: Record<PlayerID, StageArg> = {};
+          for (const pId of G.playOrder) {
+            activePlayersValue[pId] = { stage: ChinchonStage.ReviewRound };
+          }
+
+          ctx.events?.setActivePlayers({
+            value: activePlayersValue,
+            minMoves: 1,
+            maxMoves: 1,
+          });
         },
         stages: {
           [ChinchonStage.ReviewRound]: {

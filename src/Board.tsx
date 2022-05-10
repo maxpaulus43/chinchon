@@ -70,7 +70,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
   }
 
   return (
-    <div className="absolute top-0 right-0 bottom-0 left-0 bg-green-600 flex flex-col justify-between items-center p-4">
+    <div className="absolute top-0 right-0 bottom-0 left-0 bg-green-900 flex flex-col justify-between items-center p-4">
       {winner && (
         <EndGameInfo G={G} didIWin={winner === playerID} winner={winner} />
       )}
@@ -86,7 +86,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
       )}
 
       {roundEndString && (
-        <div className="absolute bg-green-900 p-5 m-5 rounded-md z-10 w-36">
+        <div className="absolute bg-green-600 p-5 m-5 rounded-md z-10 w-36">
           {roundEndString}
         </div>
       )}
@@ -109,18 +109,19 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
           })}
       </div>
 
-      <div id="piles" className="flex justify-center">
+      <div id="piles" className="flex justify-center gap-6">
         <div
           id="drawPile"
-          className="flex mr-5 flex-col text-center"
+          className="flex flex-col text-center relative"
           onClick={() => {
             moves.drawCardFromDrawPile();
           }}
         >
-          <div className="w-32">
-            <CardView showBack />
+          <CardView showBack />
+
+          <div className="absolute -bottom-6 w-full">
+            {G.drawPileLen} cards left
           </div>
-          <div>{G.drawPileLen} cards left</div>
         </div>
 
         <div
@@ -131,13 +132,13 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
           }}
         >
           {G.discardPile.length === 0 ? (
-            <div className="bg-green-700 rounded-md w-32" />
+            <div className="bg-green-800 rounded-md w-32" />
           ) : (
-            <div className="flex flex-col text-center">
-              <div className="w-32">
-                <CardView card={G.discardPile[G.discardPile.length - 1]} />
+            <div className="flex flex-col text-center relative">
+              <CardView card={G.discardPile[G.discardPile.length - 1]} />
+              <div className="absolute -bottom-6 w-full">
+                {G.discardPileLen} cards
               </div>
-              <div>{G.discardPileLen} cards</div>
             </div>
           )}
         </div>
@@ -154,7 +155,7 @@ const ChinchonBoard: React.FC<ChinchonBoardProps> = ({
         <div
           ref={myCardsRef}
           className={`p-2 rounded-md flex justify-evenly pr-6 max-w-xl ${
-            isMyTurn ? "bg-yellow-400" : "bg-green-700"
+            isMyTurn ? "bg-yellow-400" : "bg-green-900"
           } `}
         >
           {myCards.map((c) => (

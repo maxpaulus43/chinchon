@@ -16,7 +16,7 @@ const EndRoundInfo: React.FC<EndRoundInfoProps> = ({
   callToAction,
 }) => {
   return (
-    <div className="absolute bg-green-900 p-5 m-5 rounded-md z-20 flex flex-col gap-5 justify-between">
+    <div className="absolute bg-green-600 p-5 m-5 rounded-md z-20 flex flex-col gap-5 justify-between">
       {title && <div className="text-lg">{title}</div>}
       <div>Round End Review</div>
       {G.roundEndState && (

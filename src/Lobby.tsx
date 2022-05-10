@@ -67,7 +67,7 @@ const ChinchonLobby: React.FC<ChinchonLobbyProps> = () => {
       gameComponents={[{ game: Chinchon, board: ChinchonBoard }]}
       renderer={(L) => {
         return (
-          <div className="absolute w-full h-full bg-green-600">
+          <div className="absolute w-full h-full bg-green-900">
             {L.phase === LobbyPhases.ENTER && <EnterLobbyView L={L} />}
             {L.phase === LobbyPhases.LIST && <ListGamesView L={L} />}
             {L.phase === LobbyPhases.PLAY && <RunningMatchView L={L} />}

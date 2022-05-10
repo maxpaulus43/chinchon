@@ -25,7 +25,7 @@ const EndRoundInfo: React.FC<EndRoundInfoProps> = ({
             return (
               <div>
                 <span>
-                  Player {pID} (+{points} points):
+                  Player {pID} ({points > 0 && "+"}{points} points):
                 </span>
                 <span className="flex gap-1">
                   {hand.map((c) => (

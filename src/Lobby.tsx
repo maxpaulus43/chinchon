@@ -135,7 +135,6 @@ const EnterLobbyView: React.FC<{ L: LobbyRendererProps }> = ({ L }) => {
           How to play Chinchón <img src={image} className="w-8" alt="gh" />
         </a>
       </div>
-      <div></div>
     </div>
   );
 };

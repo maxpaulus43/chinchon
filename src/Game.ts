@@ -102,6 +102,19 @@ function scoreAndEliminatePlayers(
     };
 
     player.points += points;
+  }
+
+  // if the current player got chinchon, set every other player's points to Infinity
+  if (G.roundEndState[ctx.currentPlayer].points === -Infinity) {
+    Object.entries(G.players)
+      .filter(([pId, _]) => pId !== ctx.currentPlayer)
+      .forEach(([pId, player]) => {
+        player.points = Infinity;
+        G.roundEndState[pId].points = player.points;
+      });
+  }
+
+  for (const [pId, player] of Object.entries(G.players)) {
     // TODO support buyback logic
     if (player.points >= 100) {
       const idx = G.playOrder.indexOf(pId);
@@ -157,8 +170,15 @@ export const Chinchon: Game<ChinchonGameState, ChinchonCtx> = {
     };
   },
   endIf: (G) => {
+    // win if you are the last player standing
     if (G.playOrder.length === 1) {
       return { winner: G.playOrder[0] };
+    }
+    // win if somebody got chinchón
+    for (const [pId, roundEndState] of Object.entries(G.roundEndState)) {
+      if (roundEndState.points === -Infinity) {
+        return { winner: pId };
+      }
     }
   },
   phases: {

@@ -32,14 +32,22 @@ export function calculatePointsForHand(
   hand: ChinchonCard[]
 ): [number, ChinchonCard[]] {
   let result = sumLastNCards(hand);
-  let optimalPermutation = hand; // TODO do something with this hand
+  let optimalPermutation = hand;
 
   for (const permutation of getPermutations(hand.slice())) {
-    if (is7CardRun(permutation) || is4_3Combo(permutation)) {
-      result = -10;
-      
-      break;
-    } else if (is6CardRun(permutation) || is3_3Combo(permutation)) {
+    if (is7CardRun(permutation)) {
+      if (permutation.some(c => c.symbol === "Jo")) {
+        return [-10, permutation];
+      } else {
+        return [-Infinity, permutation]
+      }
+    }
+
+    if (is4_3Combo(permutation)) {
+      return [-10, permutation];
+    }
+
+    if (is6CardRun(permutation) || is3_3Combo(permutation)) {
       result = Math.min(result, sumLastNCards(permutation, 1));
       optimalPermutation = permutation
     } else if (is5CardRun(permutation)) {

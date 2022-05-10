@@ -30,7 +30,7 @@
     "build": "react-scripts build && npm run build-server && npm run gzip-bundle && npm run brotli-bundle",
     "start": "node server-build/server.js",
     "dev": "PORT=8081 REACT_APP_PORT=8082 react-scripts start",
-    "local": "PORT=8082 REACT_APP_PORT=8082 npm run build && npm start",
+    "local": "PORT=8082 REACT_APP_PORT=8082 npm run build && PORT=8082 REACT_APP_PORT=8082 npm start",
     "build-server": "tsc src/server.ts --outDir server-build --esModuleInterop --module commonjs --skipLibCheck true --downlevelIteration",
     "gzip-bundle": "npx gzipper compress --gzip build/static/js/main.*.js",
     "brotli-bundle": "npx gzipper compress --brotli build/static/js/main.*.js",

@@ -8,7 +8,8 @@ const server = Server({
   games: [Chinchon],
   origins: [
     // Allow your game site to connect.
-    "https://chinchon-game.herokuapp.com",
+    //"https://chinchon-game.herokuapp.com",
+    "https://chinchon-three.vercel.app",
     // Allow localhost to connect, except when NODE_ENV is 'production'.
     Origins.LOCALHOST_IN_DEVELOPMENT,
   ],

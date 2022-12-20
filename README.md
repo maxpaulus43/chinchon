@@ -1,4 +1,4 @@
-[play the game here](https://chinchon-game.herokuapp.com) (heroku takes ~30 seconds cold start the game server, so be patient).
+[play the game here](https://chinchon-game.onrender.com) (render.com takes ~30 seconds cold start the game server, so be patient).
 
 # Chinchón (2-4 players)
 
